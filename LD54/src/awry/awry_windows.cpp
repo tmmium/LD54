@@ -1006,6 +1006,46 @@ struct gl_graphics_t final : graphics_t {
       push(v0, v1, v2, v3);
    }
 
+   void draw_line_strip(const std::span<const vector2_t> positions, const float thickness, const color_t &color)
+   {
+      push(m_texture);
+      for (size_t index = 0; index < positions.size(); index++) {
+         auto from = positions[index];
+         auto to = positions[(index + 1) % positions.size()];
+
+         const vector2_t perp = (to - from).normalized().perp();
+         const vector2_t disp = perp * thickness * 0.5f;
+         const vector2_t p0 = from + disp;
+         const vector2_t p1 = to + disp;
+         const vector2_t p2 = to - disp;
+         const vector2_t p3 = from - disp;
+
+         const vector2_t uv = { 0.5f, 0.5f };
+
+         const vertex_t v0 = { p0, uv, color };
+         const vertex_t v1 = { p1, uv, color };
+         const vertex_t v2 = { p2, uv, color };
+         const vertex_t v3 = { p3, uv, color };
+
+         push(v0, v1, v2, v3);
+      }
+   }
+
+   void draw_triangles_filled(const std::span<const vector2_t> positions, const color_t &color)
+   {
+      assert(positions.size() % 3 == 0);
+
+      const vector2_t uv = { 0.5f, 0.5f };
+
+      push(m_texture);
+      for (size_t index = 0; index < positions.size(); index += 3) {
+         const vertex_t v0 = { positions[index + 0], uv, color };
+         const vertex_t v1 = { positions[index + 1], uv, color };
+         const vertex_t v2 = { positions[index + 2], uv, color };
+         push(v0, v1, v2);
+      }
+   }
+
    void draw(const texture_t &texture, const rectangle_t &src, const rectangle_t &dst, const color_t &color)
    {
       const float iu = 1.0f / texture.m_size.x;

@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <numbers>
+#include <span>
 
 template <typename T, size_t N>
 constexpr auto count_of(const T(&)[N]) { return N; }
@@ -18,6 +19,7 @@ struct math_t {
    static constexpr float kPI  = std::numbers::pi_v<float>;
    static constexpr float kPI2 = kPI * 2.0f;
 
+   static float abs(float value);
    static float cosf(float value);
    static float sinf(float value);
    static float to_rad(float value);
@@ -203,6 +205,7 @@ struct matrix3_t {
 };
 
 struct timespan_t {
+   static constexpr timespan_t zero() { return timespan_t{ 0 }; }
    static constexpr timespan_t from_seconds(double seconds) { return timespan_t{ int64_t(seconds * 1000000.0) }; }
    static constexpr timespan_t from_milliseconds(double millis) { return timespan_t{ int64_t(millis * 1000.0) }; }
 
@@ -416,6 +419,8 @@ struct graphics_t {
    virtual void draw_circle_segment(const vector2_t &center, const float radius, const int steps, const float thickness, const float start_angle, const float end_angle, const color_t &color) = 0;
    virtual void draw_line(const vector2_t &from, const vector2_t &to, const float thickness, const color_t &color) = 0;
    virtual void draw_line(const vector2_t &from, const vector2_t &to, const float thickness, const color_t &from_color, const color_t &to_color) = 0;
+   virtual void draw_line_strip(const std::span<const vector2_t> positions, const float thickness, const color_t &color) = 0;
+   virtual void draw_triangles_filled(const std::span<const vector2_t> positions, const color_t &color) = 0;
    virtual void draw(const texture_t &texture, const rectangle_t &src, const rectangle_t &dst, const color_t &color) = 0;
    virtual void draw(const texture_t &texture, const rectangle_t &src, const rectangle_t &dst, const matrix3_t &transform, const color_t &color) = 0;
    //virtual void draw_polygon_filled() = 0;

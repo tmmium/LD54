@@ -4,9 +4,11 @@
 
 #include "awry/awry.h"
 #include "utils/font.hpp"
+#include "utils/colors.hpp"
 #include "utils/overlay.hpp"
 #include "entity/starfield.hpp"
 #include "entity/solarsystem.hpp"
+#include "entity/spaceship.hpp"
 
 class application_t final {
 public:
@@ -43,4 +45,5 @@ private:
    overlay_t        m_overlay;
    starfield_t      m_starfield;
    solarsystem_t    m_solarsystem;
+   spaceship_t      m_spaceship;
 };

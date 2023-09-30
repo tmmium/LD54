@@ -52,6 +52,7 @@ bool application_t::startup()
 
    m_starfield.randomize(m_canvas_size);
    m_solarsystem.randomize(m_canvas_size);
+   m_spaceship.initialize(m_solarsystem.in_a_galaxy_far_far_away());
 
    return m_running;
 }
@@ -90,7 +91,13 @@ void application_t::update()
    m_solarsystem.update(m_frame_time);
    if (m_keyboard.pressed(keyboard_t::key_t::space)) {
       m_solarsystem.randomize(m_canvas_size);
+      m_spaceship.initialize(m_solarsystem.in_a_galaxy_far_far_away());
    }
+
+   m_spaceship.direction(m_mouse.position() - m_spaceship.m_position.as_point());
+   m_spaceship.boost(m_keyboard.down(keyboard_t::key_t::left_shift));
+   m_spaceship.accelerate(m_mouse.down(mouse_t::button_t::right));
+   m_spaceship.update(m_frame_time);
 
    m_overlay.clear();
 }
@@ -105,6 +112,9 @@ void application_t::render()
 {
    m_starfield.render(m_graphics);
    m_solarsystem.render(m_graphics);
+   m_spaceship.render(m_graphics);
+   m_spaceship.render(m_overlay);
+
    m_overlay.render(m_graphics);
 }
 

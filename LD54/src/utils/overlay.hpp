@@ -25,7 +25,7 @@ struct overlay_t {
       }
    }
 
-   void add(const color_t &color, const char *format, ...)
+   void draw_text_va(const color_t &color, const char *format, ...)
    {
       char text[512] = {};
       va_list args;

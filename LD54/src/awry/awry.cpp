@@ -104,6 +104,11 @@ matrix3_t matrix3_t::rotate(const float radians)
 }
 
 // static 
+float math_t::abs(float value)
+{
+   return std::fabsf(value);
+}
+
 float math_t::cosf(float value)
 {
    return std::cosf(value);
