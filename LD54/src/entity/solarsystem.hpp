@@ -73,12 +73,10 @@ struct sun_t {
 
 struct planet_t {
    static constexpr float min_radius = 10.0f;
-   static constexpr float max_radius = 25.0f;
+   static constexpr float max_radius = 20.0f;
    static constexpr float orbital_speed_factor = 10.0f;
 
    planet_t() = default;
-
-
 
    vector2_t m_position;
    float     m_radius = 0.0f;
@@ -90,7 +88,7 @@ struct planet_t {
 };
 
 struct solarsystem_t {
-   static constexpr int planet_count = 6;
+   static constexpr int planet_count = 7;
 
    solarsystem_t() = default;
 
@@ -122,9 +120,9 @@ struct solarsystem_t {
       }
 
       // planet orbits
-      //for (auto &planet : m_planets) {
-      //   graphics.draw_circle_outlined(planet.m_position, planet.m_radius + planet.m_radius * 0.7f, 32, 1.0f, planet_orbit_color);
-      //}
+      for (auto &planet : m_planets) {
+         graphics.draw_circle_outlined(planet.m_position, planet.m_radius + planet.m_radius * 0.7f, 32, 1.0f, planet_orbit_color);
+      }
 
       // planet bodies
       for (auto &planet : m_planets) {
@@ -134,8 +132,10 @@ struct solarsystem_t {
       }
    }
 
-   void randomize(const point_t &size)
+   void randomize(const point_t &size, const uint32_t seed = 1)
    {
+      m_prng = { seed };
+
       const vector2_t center = size * 0.5f;
       const float system_radius = center.y * 0.99f;
       const float radius_step = system_radius / float(planet_count + 1);
@@ -145,10 +145,10 @@ struct solarsystem_t {
       m_sun.m_radius = sun_t::radius;
 
       for (auto &planet : m_planets) {
-         planet.m_orbit = random_t::range01() * 360.0f;
+         planet.m_orbit = m_prng.range01() * 360.0f;
          matrix3_t transform = matrix3_t::translate(center) * matrix3_t::rotate(planet.m_orbit);
          planet.m_position = transform * vector2_t{ radius, 0.0f };
-         planet.m_radius = random_t::range(planet_t::min_radius, planet_t::max_radius);
+         planet.m_radius = m_prng.range(planet_t::min_radius, planet_t::max_radius);
          planet.m_distance = vector2_t::distance(m_sun.m_position, planet.m_position);
          planet.m_speed = 1.0f + planet_t::orbital_speed_factor * (1.0f - (radius / system_radius));
          radius += radius_step;
@@ -159,13 +159,15 @@ struct solarsystem_t {
 
    vector2_t in_a_galaxy_far_far_away() const 
    {
-      const int index_offset = 3;
-      vector2_t position = m_planets[planet_count - index_offset].m_position;
-      float     distance = m_planets[planet_count - index_offset].m_distance;
-      vector2_t direction = (m_sun.m_position - position).normalized();
-      return m_sun.m_position + direction * distance;
+      //const int index_offset = 3;
+      //vector2_t position = m_planets[planet_count - index_offset].m_position;
+      //float     distance = m_planets[planet_count - index_offset].m_distance;
+      //vector2_t direction = (m_sun.m_position - position).normalized();
+      //return m_sun.m_position + direction * distance;
+      return m_sun.m_position + m_sun.m_position * vector2_t::right() * 0.6f;
    }
 
+   prng_t   m_prng;
    sun_t    m_sun;
    planet_t m_planets[planet_count];
 };

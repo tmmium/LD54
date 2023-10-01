@@ -47,6 +47,16 @@ struct random_t {
    static int   range_int(int lo, int hi);
 };
 
+struct prng_t {
+   prng_t(uint32_t state = 1);
+
+   int next();
+   float range01();
+   float range(float lo, float hi);
+
+   uint32_t m_state = 1;
+};
+
 struct point_t {
    constexpr point_t() = default;
    constexpr point_t(int x, int y) : x(x), y(y) {}

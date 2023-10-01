@@ -42,9 +42,10 @@ private:
    timespan_t       m_frame_time;
 
 private:
-   texture_t        m_font8_tex;
+   texture_t        m_sprite_tex;
    bitmap_font_t    m_font;
    overlay_t        m_overlay;
+   sprite_t         m_splash_spr;
    cursor_t         m_cursor;
    starfield_t      m_starfield;
    solarsystem_t    m_solarsystem;

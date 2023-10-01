@@ -34,6 +34,16 @@ struct sprite_t {
       m_dest = { position.as_point(), m_dest.width_height() };
    }
 
+   int width() const
+   {
+      return m_source.w;
+   }
+
+   int height() const
+   {
+      return m_source.h;
+   }
+
    void render(graphics_t &graphics)
    {
       graphics.draw(*m_texture, m_source, m_dest, m_color);

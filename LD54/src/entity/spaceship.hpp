@@ -233,8 +233,8 @@ struct spaceship_t {
       m_spawnicator.update(deltatime);
       m_spacetrail.push(m_position, m_velocity);
       m_spacetrail.update(deltatime);
-      m_gunturret.position(m_position);
-      m_gunturret.update(deltatime);
+      //m_gunturret.position(m_position);
+      //m_gunturret.update(deltatime);
    }
 
    void render(graphics_t &graphics)
@@ -274,7 +274,7 @@ struct spaceship_t {
          graphics.draw_line_strip(span, 2.0f, spaceship_outline_color);
       }
 
-      m_gunturret.render(graphics);
+      //m_gunturret.render(graphics);
    }
 
    void render(overlay_t &overlay)

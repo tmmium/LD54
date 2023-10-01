@@ -147,6 +147,27 @@ int random_t::range_int(int lo, int hi)
    return int(range(float(lo), float(hi)) + 0.5f);
 }
 
+prng_t::prng_t(uint32_t state)
+   : m_state(state)
+{
+}
+
+int prng_t::next()
+{
+   m_state = m_state * 1103515245 + 12345;
+   return (unsigned int)(m_state / 65536) % 32768;
+}
+
+float prng_t::range01()
+{
+   return next() / 32768.0f;
+}
+
+float prng_t::range(float lo, float hi)
+{
+   return lo + (hi - lo) * range01();
+}
+
 void mouse_t::update()
 {
    m_position_delta = {};

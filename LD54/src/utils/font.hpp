@@ -3,8 +3,9 @@
 #include <algorithm>
 
 struct bitmap_font_t {
-   static void construct_monospaced_font(bitmap_font_t &font, texture_t &texture, 
-                                         const point_t &character_count, const point_t &character_size, 
+   static void construct_monospaced_font(bitmap_font_t &font, 
+                                         const point_t &character_count, 
+                                         const point_t &character_size, 
                                          const int first_codepoint = 32);
 
    static constexpr uint32_t invalid_character_codepoint = '?';
