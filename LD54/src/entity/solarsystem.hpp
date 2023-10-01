@@ -1,5 +1,7 @@
 // solarsystem.hpp
 
+
+
 struct indicator_t {
    static constexpr timespan_t wave_lifetime = timespan_t::from_seconds(0.8f);
    static constexpr float      wave_radius_factor = 2.5f;

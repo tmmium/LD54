@@ -23,7 +23,7 @@ application_t::application_t()
 
    // todo: check desktop resolution and generate world from there.
    m_window.set_size(m_canvas_size);
-   //m_window.fullscreen();
+   m_window.fullscreen();
    m_window_size = m_window.get_size();
    //m_canvas_size = m_window_size;
 }
@@ -54,17 +54,29 @@ bool application_t::startup()
       return false; 
    }
 
-   bitmap_font_t::construct_monospaced_font(m_font, { 16, 6 }, { 8, 8 });
    m_font.set_texture(m_sprite_tex);
+   bitmap_font_t::construct_monospaced_font(m_font, { 16, 6 }, { 8, 8 });
 
-   m_splash_spr.set_texture(m_sprite_tex);
-   m_splash_spr.set_source({ 0, 48, 292, 94 });
-   m_splash_spr.set_destination({ 0, 0, 292, 94 });
+   { // note: splash screen settings and position
+      m_splash_spr.set_texture(m_sprite_tex);
+      m_splash_spr.set_source({ 0, 49, 288, 90 });
+      m_splash_spr.set_destination({ 0, 0, 288, 90 });
 
-   point_t splash_half_dims = point_t{ m_splash_spr.width() / 2, m_splash_spr.height() / 2 };
-   vector2_t splash_canvas_position = (m_canvas_size / 2) - splash_half_dims;
-   splash_canvas_position.y = float(m_canvas_size.y - m_splash_spr.height() * 2);
-   m_splash_spr.set_position(splash_canvas_position);
+      point_t splash_half_dims = point_t{ m_splash_spr.width() / 2, m_splash_spr.height() / 2 };
+      vector2_t splash_canvas_position = (m_canvas_size / 2) - splash_half_dims;
+      splash_canvas_position.y = float(m_canvas_size.y - m_splash_spr.height() * 5);
+      m_splash_spr.set_position(splash_canvas_position);
+   }
+
+   { // note: tmmium sprite settings and position
+      m_tmmium_spr.set_texture(m_sprite_tex);
+      m_tmmium_spr.set_source({ 128, 0, 238, 14 });
+      m_tmmium_spr.set_destination({ 0, 0, 238, 14 });
+
+      point_t tmmium_dims = point_t{ m_tmmium_spr.width(), m_tmmium_spr.height() };
+      vector2_t tmmium_canvas_position = { 0, m_canvas_size.y - tmmium_dims.y };
+      m_tmmium_spr.set_position(tmmium_canvas_position);
+   }
 
    m_starfield.randomize(m_canvas_size);
    m_solarsystem.randomize(m_canvas_size);
@@ -133,6 +145,7 @@ void application_t::update()
    m_spaceship.accelerate(m_mouse.down(mouse_t::button_t::right));
    m_spaceship.m_gunturret.set_target(m_solarsystem.m_sun.m_position);
    m_spaceship.update(m_frame_time);
+   m_spaceship.contain({ 0, 0, m_canvas_size });
 
    m_overlay.clear();
 }
@@ -150,6 +163,7 @@ void application_t::render()
    m_spaceship.render(m_graphics);
    m_cursor.render(m_graphics);
 
+   m_tmmium_spr.render(m_graphics);
    m_splash_spr.render(m_graphics);
 
    m_spaceship.render(m_overlay);

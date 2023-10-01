@@ -23,6 +23,7 @@
     <ClInclude Include="src\entity\solarsystem.hpp" />
     <ClInclude Include="src\entity\spaceship.hpp" />
     <ClInclude Include="src\entity\starfield.hpp" />
+    <ClInclude Include="src\entity\warez.hpp" />
     <ClInclude Include="src\LD54.hpp" />
     <ClInclude Include="src\utils\colors.hpp" />
     <ClInclude Include="src\utils\font.hpp" />

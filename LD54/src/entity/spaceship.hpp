@@ -188,8 +188,8 @@ struct spaceship_t {
    {
       m_position = position;
       m_direction = direction;
-      m_acceleration = {};
-      m_velocity = {};
+      m_acceleration = vector2_t::zero();
+      m_velocity = vector2_t::zero();
       m_spawnicator.activate();
    }
 
@@ -219,6 +219,40 @@ struct spaceship_t {
       }
       else {
          m_acceleration = m_direction * (active * spaceship_t::propulsion_thrust) * propulsion_boost_factor;
+      }
+   }
+
+   void contain(const rectangle_t &world)
+   {
+      constexpr int   edge_spacing = 10;
+      constexpr float bounciness = 0.4f;
+      constexpr float bounce_factor = 1.0f - bounciness;
+      
+      const point_t position = m_position.as_point();
+      if (position.x < (world.top_left().x + edge_spacing)) {
+         m_angle = vector2_t::up().perp().dot(m_velocity.normalized());
+         m_position.x = float(world.top_left().x + edge_spacing);
+         m_velocity.x = -m_velocity.x;
+         m_velocity *= bounciness + (1.0f - m_angle) * bounce_factor;
+      }
+      if (position.x >= (world.bottom_right().x - edge_spacing)) {
+         m_angle = vector2_t::down().perp().dot(m_velocity.normalized());
+         m_position.x = float(world.bottom_right().x - edge_spacing);
+         m_velocity.x = -m_velocity.x;
+         m_velocity *= bounciness + (1.0f - m_angle) * bounce_factor;
+      }
+
+      if (position.y < (world.top_left().y + edge_spacing)) {
+         m_angle = vector2_t::right().perp().dot(m_velocity.normalized());
+         m_position.y = float(world.top_left().y + edge_spacing);
+         m_velocity.y = -m_velocity.y;
+         m_velocity *= bounciness + (1.0f - m_angle) * bounce_factor;
+      }
+      if (position.y >= (world.bottom_right().y - edge_spacing)) {
+         m_angle = vector2_t::left().perp().dot(m_velocity.normalized());
+         m_position.y = float(world.bottom_right().y - edge_spacing);
+         m_velocity.y = -m_velocity.y;
+         m_velocity *= bounciness + (1.0f - m_angle) * bounce_factor;
       }
    }
 
@@ -288,8 +322,9 @@ struct spaceship_t {
                            m_drag.length());
 
       overlay.draw_text_va(color_t{},
-                           "trail: %d",
-                           m_spacetrail.m_count);
+                           "trail: %d angle: %3.3f",
+                           m_spacetrail.m_count,
+                           m_angle);
    }
 
    bool      m_boosting = false;
@@ -298,6 +333,8 @@ struct spaceship_t {
    vector2_t m_acceleration;
    vector2_t m_velocity;
    vector2_t m_drag;
+
+   float     m_angle = 0.0f;
 
    gunturret_t   m_gunturret;
    spacetrail_t  m_spacetrail;

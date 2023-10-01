@@ -8,6 +8,7 @@
 #include "utils/sprite.hpp"
 #include "utils/overlay.hpp"
 #include "entity/cursor.hpp"
+#include "entity/warez.hpp"
 #include "entity/starfield.hpp"
 #include "entity/solarsystem.hpp"
 #include "entity/spaceship.hpp"
@@ -46,6 +47,7 @@ private:
    bitmap_font_t    m_font;
    overlay_t        m_overlay;
    sprite_t         m_splash_spr;
+   sprite_t         m_tmmium_spr;
    cursor_t         m_cursor;
    starfield_t      m_starfield;
    solarsystem_t    m_solarsystem;
