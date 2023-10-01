@@ -8,13 +8,12 @@ struct cargohold_t {
 };
 
 struct spawnicator_t {
-   static constexpr int        wave_count = 3;
-   static constexpr float      wave_radius = 50.0f;
-   static constexpr timespan_t wave_lifetime = timespan_t::from_seconds(1.5f);
+   static constexpr float      wave_radius = 30.0f;
+   static constexpr timespan_t wave_lifetime = timespan_t::from_seconds(0.8f);
 
    spawnicator_t() = default;
 
-   void activate()
+   void activate(int wave_count)
    {
       m_waves = wave_count;
    }
@@ -177,8 +176,8 @@ struct gunturret_t {
 struct spaceship_t {
    // todo: move to propulsion
    static constexpr float drag_coefficient = 0.8f;
-   static constexpr float propulsion_thrust = 150.0f;
-   static constexpr float propulsion_boost_factor = 2.0f;
+   static constexpr float propulsion_thrust = 100.0f;
+   static constexpr float propulsion_boost_factor = 1.5f;
    static constexpr float propulsion_base_velocity = propulsion_thrust / drag_coefficient;
    static constexpr float propulsion_maximum_velocity = (propulsion_thrust * propulsion_boost_factor) / drag_coefficient;
 
@@ -190,7 +189,7 @@ struct spaceship_t {
       m_direction = direction;
       m_acceleration = vector2_t::zero();
       m_velocity = vector2_t::zero();
-      m_spawnicator.activate();
+      m_spawnicator.activate(2);
    }
 
    void position(const vector2_t &position)
@@ -224,6 +223,27 @@ struct spaceship_t {
 
    void contain(const rectangle_t &world)
    {
+#if 1
+      const point_t position = m_position.as_point();
+
+      if (position.x < world.top_left().x) {
+         m_position.x = float(world.bottom_right().x);
+         m_spawnicator.activate(2);
+      }
+      if (position.x > world.bottom_right().x) {
+         m_position.x = float(world.top_left().x);
+         m_spawnicator.activate(2);
+      }
+
+      if (position.y < world.top_left().y) {
+         m_position.y = float(world.bottom_right().y);
+         m_spawnicator.activate(2);
+      }
+      if (position.y > world.bottom_right().y) {
+         m_position.y = float(world.top_left().y);
+         m_spawnicator.activate(2);
+      }
+#elif
       constexpr int   edge_spacing = 10;
       constexpr float bounciness = 0.4f;
       constexpr float bounce_factor = 1.0f - bounciness;
@@ -254,6 +274,7 @@ struct spaceship_t {
          m_velocity.y = -m_velocity.y;
          m_velocity *= bounciness + (1.0f - m_angle) * bounce_factor;
       }
+#endif
    }
 
    void update(const timespan_t &deltatime)
