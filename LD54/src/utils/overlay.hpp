@@ -21,6 +21,7 @@ struct overlay_t {
       }
 
       for (auto &line : m_lines) {
+         m_font.render(graphics, line.position + point_t{1,1}, line.text, color_black, m_scale);
          m_font.render(graphics, line.position, line.text, line.color, m_scale);
       }
    }

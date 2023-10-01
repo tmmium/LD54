@@ -1,5 +1,12 @@
 // spaceship.hpp
 
+struct cargohold_t {
+   static constexpr int slot_count = 2;
+
+   cargohold_t() = default;
+
+};
+
 struct spawnicator_t {
    static constexpr int        wave_count = 3;
    static constexpr float      wave_radius = 70.0f;
@@ -112,25 +119,38 @@ struct spaceship_t {
       const vector2_t tangent = normal.perp();
 
       // body
-      const vector2_t b0 = center + normal * 8.0f;
-      const vector2_t b1 = center - normal * 4.0f + tangent * 4.0f;
-      const vector2_t b2 = center - normal * 4.0f - tangent * 4.0f;
+      const vector2_t b0 = center + normal * 10.0f;
+      const vector2_t b1 = center - normal * 5.0f + tangent * 5.0f;
+      const vector2_t b2 = center - normal * 5.0f - tangent * 5.0f;
+
+      // right wing
+      const vector2_t r0 = center;
+      const vector2_t r1 = b1 - normal * 3.0f + tangent * 4.0f;
+      const vector2_t r2 = b1 - normal * 3.0f - tangent * 4.0f;
+       
+      // left wing
+      const vector2_t l0 = center;
+      const vector2_t l1 = b2 - normal * 3.0f + tangent * 4.0f;
+      const vector2_t l2 = b2 - normal * 3.0f - tangent * 4.0f;
 
       const vector2_t vertices[] =
       {
+         r0, r1, r2,
+         l0, l1, l2,
          b0, b1, b2,
-         //r0, r1, r2,
-         //l0, l1, l2,
       };
 
       m_spawnicator.render(graphics);
       graphics.draw_triangles_filled(vertices, spaceship_fill_color);
-      graphics.draw_line_strip(vertices, 2.0f, spaceship_outline_color);  
+      for (int index = 0; index < 3; index++) {
+         auto span = std::span{ vertices + index * 3, 3 };
+         graphics.draw_line_strip(span, 2.0f, spaceship_outline_color);
+      }
    }
 
    void render(overlay_t &overlay)
    {
-      overlay.draw_text_va(color_black, 
+      overlay.draw_text_va(color_t{},
                            "%d,%d (vel: %1.3f acc: %2.3f drag: %2.3f)",
                            int(m_position.x),
                            int(m_position.y),
@@ -146,6 +166,7 @@ struct spaceship_t {
    vector2_t m_velocity;
    vector2_t m_drag;
 
+   cargohold_t   m_cargohold;
    spawnicator_t m_spawnicator;
 };
 
