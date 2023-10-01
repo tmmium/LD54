@@ -34,6 +34,11 @@ struct sprite_t {
       m_dest = { position.as_point(), m_dest.width_height() };
    }
 
+   point_t dims() const
+   {
+      return m_source.width_height();
+   }
+
    int width() const
    {
       return m_source.w;

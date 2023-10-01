@@ -55,7 +55,7 @@ struct spawnicator_t {
 struct spacetrail_t {
    static constexpr int        trail_count = 32;
    static constexpr timespan_t trail_lifetime = timespan_t::from_seconds(0.5);
-   static constexpr timespan_t trail_spawn_timer = timespan_t::from_seconds(0.033);
+   static constexpr timespan_t trail_spawn_timer = timespan_t::from_seconds(0.02);
    static constexpr float      trail_base_size = 2.0f;
    static constexpr float      trail_grow_size = 4.0f;
 
@@ -71,6 +71,11 @@ struct spacetrail_t {
    bool active() const
    {
       return m_count > 0;
+   }
+
+   void reset()
+   {
+      m_count = 0;
    }
 
    void push(const vector2_t &position, const vector2_t &velocity)
@@ -189,6 +194,7 @@ struct spaceship_t {
       m_direction = direction;
       m_acceleration = vector2_t::zero();
       m_velocity = vector2_t::zero();
+      m_spacetrail.reset();
       m_spawnicator.activate(2);
    }
 

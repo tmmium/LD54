@@ -87,6 +87,7 @@ struct rectangle_t {
    constexpr point_t bottom_right() const { return { x + w, y + h }; }
    constexpr point_t bottom_left() const { return { x + w, y }; }
 
+   constexpr point_t xy() const { return { x, y }; }
    constexpr point_t width_height() const { return { w, h }; }
 
    constexpr bool overlap(const point_t &position)

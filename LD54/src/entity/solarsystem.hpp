@@ -90,7 +90,7 @@ struct planet_t {
 };
 
 struct solarsystem_t {
-   static constexpr int planet_count = 7;
+   static constexpr int planet_count = 9;
 
    solarsystem_t() = default;
 

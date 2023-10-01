@@ -43,11 +43,22 @@ private:
    timespan_t       m_frame_time;
 
 private:
+   enum class state_t 
+   {
+      menu,
+      play,
+      over,
+   };
+
+   state_t          m_state = {};
    texture_t        m_sprite_tex;
    bitmap_font_t    m_font;
    overlay_t        m_overlay;
+   float            m_splash_pulse = 0.0f;
    sprite_t         m_splash_spr;
+   sprite_t         m_space_spr;
    sprite_t         m_tmmium_spr;
+   sprite_t         m_instructions_spr;
    cursor_t         m_cursor;
    starfield_t      m_starfield;
    solarsystem_t    m_solarsystem;
