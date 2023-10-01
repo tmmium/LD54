@@ -19,6 +19,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\awry\awry.h" />
+    <ClInclude Include="src\entity\cursor.hpp" />
     <ClInclude Include="src\entity\solarsystem.hpp" />
     <ClInclude Include="src\entity\spaceship.hpp" />
     <ClInclude Include="src\entity\starfield.hpp" />
@@ -26,6 +27,7 @@
     <ClInclude Include="src\utils\colors.hpp" />
     <ClInclude Include="src\utils\font.hpp" />
     <ClInclude Include="src\utils\overlay.hpp" />
+    <ClInclude Include="src\utils\sprite.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

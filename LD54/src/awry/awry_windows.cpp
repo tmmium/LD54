@@ -1269,6 +1269,17 @@ void texture_t::destroy()
    m_size = {};
 }
 
+//static 
+void mouse_t::hide_cursor()
+{
+   ShowCursor(FALSE);
+}
+
+void mouse_t::show_cursor()
+{
+   ShowCursor(TRUE);
+}
+
 runtime_t::runtime_t()
 {
    runtime_t::ptr = this;

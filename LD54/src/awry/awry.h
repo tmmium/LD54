@@ -10,7 +10,7 @@
 #include <span>
 
 template <typename T, size_t N>
-constexpr auto count_of(const T(&)[N]) { return N; }
+constexpr auto array_size(const T(&)[N]) { return N; }
 
 template <typename T, size_t N>
 constexpr auto max_index_of(const T(&)[N]) { return N - 1; }
@@ -93,6 +93,13 @@ struct rectangle_t {
 };
 
 struct vector2_t {
+   static constexpr vector2_t zero() { return vector2_t{ 0.0f, 0.0f }; }
+   static constexpr vector2_t one() { return vector2_t{ 1.0f, 1.0f }; }
+   static constexpr vector2_t left() { return vector2_t{ -1.0f, 0.0f }; }
+   static constexpr vector2_t right() { return vector2_t{ 1.0f, 0.0f }; }
+   static constexpr vector2_t up() { return vector2_t{ 0.0f, -1.0f }; }
+   static constexpr vector2_t down() { return vector2_t{ 0.0f, 1.0f }; }
+
    static float distance(vector2_t &lhs, const vector2_t &rhs);
    static vector2_t random_direction();
    static vector2_t lerp(const vector2_t &a, const vector2_t &b, float t);
@@ -116,6 +123,10 @@ struct vector2_t {
    constexpr vector2_t operator-(const point_t &rhs) const { return { x - rhs.x, y - rhs.y }; }
    constexpr vector2_t &operator+=(const vector2_t &rhs) { x += rhs.x; y += rhs.y; return *this; }
    constexpr vector2_t &operator-=(const vector2_t &rhs) { x -= rhs.x; y -= rhs.y; return *this; }
+   constexpr vector2_t &operator*=(const vector2_t &rhs) { x *= rhs.x; y *= rhs.y; return *this; }
+   constexpr vector2_t &operator/=(const vector2_t &rhs) { x /= rhs.x; y /= rhs.y; return *this; }
+   constexpr vector2_t &operator*=(const float rhs) { x *= rhs; y *= rhs; return *this; }
+   constexpr vector2_t &operator/=(const float rhs) { x /= rhs; y /= rhs; return *this; }
 
    constexpr vector2_t perp() const { return { y, -x }; }
    constexpr float length_squared() const { return x * x + y * y; }
@@ -325,6 +336,9 @@ struct native_window_t {
 };
 
 struct mouse_t {
+   static void hide_cursor();
+   static void show_cursor();
+
    enum class button_t {
       left,
       right,

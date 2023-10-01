@@ -174,8 +174,8 @@ point_t mouse_t::scroll_wheel_delta() const
 
 point_t mouse_t::scaled_position(const vector2_t &scale)
 {
-   float x = m_position.x / scale.x;
-   float y = m_position.y / scale.y;
+   float x = m_position.x * scale.x;
+   float y = m_position.y * scale.y;
    return point_t{ x, y };
 }
 

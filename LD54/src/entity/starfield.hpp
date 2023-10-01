@@ -2,7 +2,7 @@
 
 struct starfield_t {
    static constexpr int   max_star_count = 512;
-   static constexpr float star_alpha_variance = 0.8f;
+   static constexpr float star_alpha_variance = 0.5f;
 
    starfield_t() = default;
 

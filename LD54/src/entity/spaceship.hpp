@@ -9,8 +9,8 @@ struct cargohold_t {
 
 struct spawnicator_t {
    static constexpr int        wave_count = 3;
-   static constexpr float      wave_radius = 70.0f;
-   static constexpr timespan_t wave_lifetime = timespan_t::from_seconds(1.0f);
+   static constexpr float      wave_radius = 50.0f;
+   static constexpr timespan_t wave_lifetime = timespan_t::from_seconds(1.5f);
 
    spawnicator_t() = default;
 
@@ -51,6 +51,127 @@ struct spawnicator_t {
    vector2_t  m_position;
    timespan_t m_duration;
    int        m_waves = 0;
+};
+
+struct spacetrail_t {
+   static constexpr int        trail_count = 32;
+   static constexpr timespan_t trail_lifetime = timespan_t::from_seconds(0.5);
+   static constexpr timespan_t trail_spawn_timer = timespan_t::from_seconds(0.033);
+   static constexpr float      trail_base_size = 2.0f;
+   static constexpr float      trail_grow_size = 4.0f;
+
+   struct node_t {
+      vector2_t  m_position;
+      vector2_t  m_velocity;
+      timespan_t m_lifetime;
+      float      m_fade;
+   };
+
+   spacetrail_t() = default;
+
+   bool active() const
+   {
+      return m_count > 0;
+   }
+
+   void push(const vector2_t &position, const vector2_t &velocity)
+   {
+      if (m_timer > timespan_t::zero()) {
+         return;
+      }
+
+      m_timer = trail_spawn_timer;
+      if (m_count == array_size(m_nodes)) {
+         return;
+      }
+
+      if (m_count >= 1) {
+         for (int index = m_count - 1; index >= 0; index--) {
+            m_nodes[index + 1] = m_nodes[index];
+         }
+      }
+
+      m_nodes[0].m_position = position;
+      m_nodes[0].m_velocity = velocity;
+      m_nodes[0].m_lifetime = trail_lifetime;
+      m_count++;
+   }
+
+   void update(const timespan_t &deltatime)
+   {
+      constexpr float trail_drag_factor = 0.98f;
+
+      m_timer -= deltatime;
+      if (!active()) {
+         return;
+      }
+
+      for (auto &node : m_nodes) {
+         if (node.m_lifetime <= timespan_t::zero()) {
+            continue;
+         }
+
+         node.m_position += node.m_velocity * deltatime.elapsed_seconds();
+         node.m_velocity *= trail_drag_factor;
+         node.m_lifetime -= deltatime;
+         node.m_fade = node.m_lifetime.elapsed_seconds() / trail_lifetime.elapsed_seconds();
+         if (node.m_lifetime <= timespan_t::zero()) {
+            m_count--;
+            assert(m_count >= 0);
+         }
+      }
+   }
+
+   void render(graphics_t &graphics, const vector2_t &center, const vector2_t &offset)
+   {
+      if (!active()) {
+         return;
+      }
+
+      for (size_t index = 0; index < m_count; index++) {
+         const node_t &node = m_nodes[index];
+         const vector2_t position = (node.m_position - offset);
+         const float size = trail_base_size + trail_grow_size * (1.0f - node.m_fade);
+         graphics.draw_circle_filled(position, size, 5, color_t{}.fade(node.m_fade));
+      }
+   }
+
+   timespan_t m_timer;
+   int        m_count = 0;
+   float      m_thickness = 3.0f;
+   node_t     m_nodes[trail_count];
+};
+
+struct gunturret_t {
+   gunturret_t() = default;
+
+   void position(const vector2_t &position)
+   {
+      m_position = position;
+   }
+
+   void direction(const vector2_t &direction)
+   {
+      m_direction = direction;
+   }
+
+   void set_target(const vector2_t &position)
+   {
+      m_direction = (position - m_position).normalized();
+   }
+
+   void update(const timespan_t &deltatime)
+   {
+   }
+
+   void render(graphics_t &graphics)
+   {
+      //graphics.draw_circle_outlined(m_position, 6.0f, 12, 2.0f, spaceship_outline_color);
+      graphics.draw_line(m_position, m_position + m_direction * 7.0f, 2.0f, spaceship_turret_color);
+   }
+
+   vector2_t m_position;
+   vector2_t m_direction;
 };
 
 struct spaceship_t {
@@ -110,6 +231,10 @@ struct spaceship_t {
 
       m_spawnicator.position(m_position);
       m_spawnicator.update(deltatime);
+      m_spacetrail.push(m_position, m_velocity);
+      m_spacetrail.update(deltatime);
+      m_gunturret.position(m_position);
+      m_gunturret.update(deltatime);
    }
 
    void render(graphics_t &graphics)
@@ -141,11 +266,15 @@ struct spaceship_t {
       };
 
       m_spawnicator.render(graphics);
+      m_spacetrail.render(graphics, m_position, m_direction * 5.0f);
+
       graphics.draw_triangles_filled(vertices, spaceship_fill_color);
       for (int index = 0; index < 3; index++) {
          auto span = std::span{ vertices + index * 3, 3 };
          graphics.draw_line_strip(span, 2.0f, spaceship_outline_color);
       }
+
+      m_gunturret.render(graphics);
    }
 
    void render(overlay_t &overlay)
@@ -157,6 +286,10 @@ struct spaceship_t {
                            m_velocity.length(),
                            m_acceleration.length(),
                            m_drag.length());
+
+      overlay.draw_text_va(color_t{},
+                           "trail: %d",
+                           m_spacetrail.m_count);
    }
 
    bool      m_boosting = false;
@@ -166,6 +299,8 @@ struct spaceship_t {
    vector2_t m_velocity;
    vector2_t m_drag;
 
+   gunturret_t   m_gunturret;
+   spacetrail_t  m_spacetrail;
    cargohold_t   m_cargohold;
    spawnicator_t m_spawnicator;
 };

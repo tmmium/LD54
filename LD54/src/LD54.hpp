@@ -5,7 +5,9 @@
 #include "awry/awry.h"
 #include "utils/font.hpp"
 #include "utils/colors.hpp"
+#include "utils/sprite.hpp"
 #include "utils/overlay.hpp"
+#include "entity/cursor.hpp"
 #include "entity/starfield.hpp"
 #include "entity/solarsystem.hpp"
 #include "entity/spaceship.hpp"
@@ -43,6 +45,7 @@ private:
    texture_t        m_font8_tex;
    bitmap_font_t    m_font;
    overlay_t        m_overlay;
+   cursor_t         m_cursor;
    starfield_t      m_starfield;
    solarsystem_t    m_solarsystem;
    spaceship_t      m_spaceship;

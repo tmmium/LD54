@@ -7,10 +7,17 @@ struct indicator_t {
 
    indicator_t() = default;
 
-   void activate(float radius)
+   void activate(float radius, int wave_count = 2)
    {
+      m_active = true;
+      m_wave_count = wave_count;
       m_initial_radius = 0.0f;
       m_final_radius = radius * wave_radius_factor;
+   }
+
+   void deactivate()
+   {
+      m_active = false;
    }
 
    void position(const vector2_t &position)
@@ -20,20 +27,34 @@ struct indicator_t {
 
    void update(const timespan_t &deltatime)
    {
+      if (!m_active) {
+         return;
+      }
+
       m_duration += deltatime;
-      m_oscillator = math_t::abs(math_t::cosf(m_duration.elapsed_seconds() * oscillator_speed_factor));
-      //if (m_duration >= wave_lifetime) {
-      //   m_duration = timespan_t::zero();
-      //}
+      //m_oscillator = math_t::abs(math_t::cosf(m_duration.elapsed_seconds() * oscillator_speed_factor));
+      if (m_duration >= wave_lifetime) {
+         m_duration = timespan_t::zero();
+         m_wave_count--;
+         if (m_wave_count == 0) {
+            m_active = false;
+         }
+      }
    }
 
    void render(graphics_t &graphics)
    {
-      float alpha = m_oscillator;// m_duration.elapsed_seconds() / wave_lifetime.elapsed_seconds();
+      if (!m_active) {
+         return;
+      }
+
+      float alpha =  m_duration.elapsed_seconds() / wave_lifetime.elapsed_seconds();
       float radius = m_initial_radius + alpha * (m_final_radius - m_initial_radius);
       graphics.draw_circle_outlined(m_position, radius, 32, 2.0f, indicator_outline_color.fade(1.0f - alpha));
    }
 
+   bool       m_active = false;
+   int        m_wave_count = 0;
    vector2_t  m_position;
    timespan_t m_duration;
    float      m_oscillator = 0.0f;
@@ -52,7 +73,7 @@ struct sun_t {
 
 struct planet_t {
    static constexpr float min_radius = 10.0f;
-   static constexpr float max_radius = 15.0f;
+   static constexpr float max_radius = 25.0f;
    static constexpr float orbital_speed_factor = 10.0f;
 
    planet_t() = default;
@@ -90,6 +111,7 @@ struct solarsystem_t {
 
    void render(graphics_t &graphics)
    {
+      graphics.draw_circle_filled(m_sun.m_position, m_sun.m_radius * 1.5f, 48, sun_fill_color, sun_fill_color.fade(0.0f));
       graphics.draw_circle_filled(m_sun.m_position, m_sun.m_radius, 48, sun_fill_color);
       graphics.draw_circle_outlined(m_sun.m_position, m_sun.m_radius, 48, 2.0f, planet_outline_color);
 
@@ -100,9 +122,9 @@ struct solarsystem_t {
       }
 
       // planet orbits
-      for (auto &planet : m_planets) {
-         graphics.draw_circle_outlined(planet.m_position, planet.m_radius + planet.m_radius * 0.7f, 32, 1.0f, planet_orbit_color);
-      }
+      //for (auto &planet : m_planets) {
+      //   graphics.draw_circle_outlined(planet.m_position, planet.m_radius + planet.m_radius * 0.7f, 32, 1.0f, planet_orbit_color);
+      //}
 
       // planet bodies
       for (auto &planet : m_planets) {
@@ -128,7 +150,7 @@ struct solarsystem_t {
          planet.m_position = transform * vector2_t{ radius, 0.0f };
          planet.m_radius = random_t::range(planet_t::min_radius, planet_t::max_radius);
          planet.m_distance = vector2_t::distance(m_sun.m_position, planet.m_position);
-         planet.m_speed = planet_t::orbital_speed_factor * (1.0f - (radius / system_radius));
+         planet.m_speed = 1.0f + planet_t::orbital_speed_factor * (1.0f - (radius / system_radius));
          radius += radius_step;
 
          planet.m_indicator.activate(planet.m_radius);
